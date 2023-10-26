@@ -16,6 +16,36 @@ Usually, for such tests, you would want to make a test for each small use case a
 #### urls
 Very simple, just to test that the url are resolving properly. If adding a new url, adding it here is the way to go.
 
+
+```py
+
+from django.test import Client, TestCase
+from django.urls import NoReverseMatch, reverse
+
+
+class UsersNamedURLTests(TestCase):
+
+    def test_named_urls(self):
+        "Named users URLs should be reversible"
+        expected_named_urls = [
+            ('url_user_list', [], {}),
+            ('url_user_create', [], {}),
+            ('url_user_retrieve', [], {'user_pk': 53}),
+            ('url_user_update', [], {'user_pk': 53}),
+            ('url_user_deactivate', [], {'user_pk': 53}),
+            ('url_group_update', [], {'group_pk': 53}),
+            ('url_ajax_username_from_username_part', [], {}),
+            ('url_balance_from_username', [], {}),
+        ]
+        for name, args, kwargs in expected_named_urls:
+            with self.subTest(name=name):
+                try:
+                    reverse(name, args=args, kwargs=kwargs)
+                except NoReverseMatch:
+                    self.fail("Reversal of url named '%s' failed with NoReverseMatch" % name)
+
+```
+
 ### views
 This one is the one that would ask for the more work, and the one that we can almost endlessly extend.
 For now, the logic behind is simple enough : We try to access each page of the application, and see if the result correspond to the expected.
