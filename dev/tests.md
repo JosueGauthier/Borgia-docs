@@ -13,6 +13,56 @@ First, we tests the model User, in test_models.py.
 Each test is written to test the functionnalities of the models.py helpers methods. So get_full_name, get_year_pg, etc.
 Usually, for such tests, you would want to make a test for each small use case a theses methods. In our case, they are all regrouped into each method. This may be improved later on.
 
+##### Example :
+
+```py 
+
+class BaseBillsEntriesTestCase(BaseBorgiaViewsTestCase):
+    def setUp(self):
+        super().setUp()
+
+        ### SHOP ###
+        # On cree deux objet Shop
+        self.shop1 = Shop.objects.create(
+            name='Shop1 name',
+            description='Shop1 description')
+        self.shop2 = Shop.objects.create(
+            name='lowercase name',
+            description='Shop2 description'
+        )
+
+
+class BillsEntryTestCase(BaseBillsEntriesTestCase):
+
+    def test_create_bills_entry(self):
+        current_datetime = timezone.now()
+
+        # On créez un objet BillsEntry en utilisant les champs requis
+        bill_entry = BillsEntry.objects.create(
+            datetime=current_datetime,
+            operator=self.user1,
+            shop=self.shop1,
+            billname='Test Bill',
+            billamount=10.5  # Montant de la facture
+        )
+
+        # On verfifie via des assertions que l'objet BillsEntry a été correctement créé
+        self.assertEqual(bill_entry.operator, self.user1)
+        self.assertEqual(bill_entry.shop, self.shop1)
+        self.assertEqual(bill_entry.billname, 'Test Bill')
+        self.assertEqual(bill_entry.billamount, 10.5)
+
+        # On verifie également la date et l'heure
+        self.assertEqual(bill_entry.datetime, current_datetime)
+
+        # On verifie que l'objet a bien été enregistré dans la base de données
+        # Vérifiez qu'il y a un seul objet BillsEntry dans la base de données
+        self.assertEqual(BillsEntry.objects.count(), 1)
+        
+
+```
+
+
 #### urls
 Very simple, just to test that the url are resolving properly. If adding a new url, adding it here is the way to go.
 
